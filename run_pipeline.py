@@ -53,10 +53,9 @@ def main():
     ap.add_argument("--kernel", default="python3", help="Jupyter kernel used to execute the notebooks")
     ap.add_argument("--force", action="store_true", help="redo every step")
     ap.add_argument("--no-verify", action="store_true",
-                    help="accept raw files whose checksum differs (implies recomputing RoBERTa)")
+                    help="accept raw files whose checksum differs")
     args = ap.parse_args()
-    if args.no_verify:
-        args.recompute_roberta = True
+    
 
     # (title, outputs that mark the step as done or None to always run, action, invalidates later steps)
     roberta = (("Score sentiment: RoBERTa (recomputing)", None,
