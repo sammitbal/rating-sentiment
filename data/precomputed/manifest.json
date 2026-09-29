@@ -1,0 +1,7 @@
+{
+  "model": "cardiffnlp/twitter-roberta-base-sentiment-latest",
+  "computed_with": "OpenVINO 2026.4, Intel Arc 140V GPU (fp16); identical labels to PyTorch CPU fp32 on a 2,000-review check",
+  "created": "2026-09-28",
+  "reviews": 694252,
+  "reviews_sha256": "404e961596b902653c31534dc6fc705144a3c4f93e3bebc1a750d63a3f198048"
+}

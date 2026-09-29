@@ -1,0 +1,251 @@
+review_id,round,group,label,inconsistency_type,rating
+544514,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+231966,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+84635,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+422086,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+631446,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+95760,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+360366,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+111242,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+286253,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+632997,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+698828,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+238312,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+176678,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",M,,2.0
+50101,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+131244,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+584453,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+356394,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+208208,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",M,,4.0
+158558,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+492576,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+557219,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+211899,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+582303,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",M,,1.0
+387128,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+75190,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+212489,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+525811,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+283269,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+470130,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,2.0
+271188,1,"lexicon-only (VADER+TextBlob, not RoBERTa)",C,,1.0
+113711,1,"anchored, 4-5 stars",C,,5.0
+314170,1,"anchored, 4-5 stars",I,product_problem,4.0
+158646,1,"anchored, 4-5 stars",I,product_problem,4.0
+446353,1,"anchored, 4-5 stars",C,,4.0
+34627,1,"anchored, 4-5 stars",M,,4.0
+564158,1,"anchored, 4-5 stars",M,,4.0
+56891,1,"anchored, 4-5 stars",M,,4.0
+51092,1,"anchored, 4-5 stars",M,,4.0
+162698,1,"anchored, 4-5 stars",M,,4.0
+625026,1,"anchored, 4-5 stars",I,product_problem,4.0
+394192,1,"anchored, 4-5 stars",I,update_after_failure,5.0
+171708,1,"anchored, 4-5 stars",C,,5.0
+489380,1,"anchored, 4-5 stars",M,,4.0
+620699,1,"anchored, 4-5 stars",C,,5.0
+298372,1,"anchored, 4-5 stars",C,,5.0
+496415,1,"anchored, 4-5 stars",I,product_problem,4.0
+594893,1,"anchored, 4-5 stars",C,,4.0
+478780,1,"anchored, 4-5 stars",I,product_problem,5.0
+318475,1,"anchored, 4-5 stars",C,,5.0
+219573,1,"anchored, 4-5 stars",I,product_problem,4.0
+666942,1,"anchored, 4-5 stars",C,,5.0
+75429,1,"anchored, 4-5 stars",I,product_problem,4.0
+112069,1,"anchored, 4-5 stars",C,,5.0
+601701,1,"anchored, 4-5 stars",I,price,5.0
+216838,1,"anchored, 4-5 stars",M,,5.0
+627007,1,"anchored, 4-5 stars",I,product_problem,4.0
+671515,1,"anchored, 4-5 stars",C,,5.0
+451551,1,"anchored, 4-5 stars",I,product_problem,4.0
+513163,1,"anchored, 4-5 stars",I,product_problem,4.0
+228584,1,"anchored, 4-5 stars",C,,5.0
+622940,1,"anchored, 1-2 stars",C,,1.0
+496291,1,"anchored, 1-2 stars",I,praise_low_stars,2.0
+600185,1,"anchored, 1-2 stars",C,,2.0
+515860,1,"anchored, 1-2 stars",M,,1.0
+438663,1,"anchored, 1-2 stars",M,,1.0
+308618,1,"anchored, 1-2 stars",C,,1.0
+623376,1,"anchored, 1-2 stars",C,,1.0
+570474,1,"anchored, 1-2 stars",M,,2.0
+556258,1,"anchored, 1-2 stars",C,,1.0
+468336,1,"anchored, 1-2 stars",C,,1.0
+667141,1,"anchored, 1-2 stars",I,price,2.0
+39544,1,"anchored, 1-2 stars",C,,1.0
+292877,1,"anchored, 1-2 stars",C,,1.0
+133383,1,"anchored, 1-2 stars",C,,1.0
+6762,1,"anchored, 1-2 stars",C,,1.0
+86423,1,"anchored, 1-2 stars",U,,2.0
+681431,1,"anchored, 1-2 stars",M,,2.0
+302176,1,"anchored, 1-2 stars",C,,1.0
+613301,1,"anchored, 1-2 stars",C,,1.0
+456111,1,"anchored, 1-2 stars",C,,2.0
+670692,1,"anchored, 1-2 stars",C,,2.0
+585746,1,"anchored, 1-2 stars",C,,1.0
+170392,1,"anchored, 1-2 stars",C,,2.0
+185262,1,"anchored, 1-2 stars",M,,2.0
+93948,1,"anchored, 1-2 stars",C,,1.0
+599699,1,"anchored, 1-2 stars",I,praise_low_stars,2.0
+433053,1,"anchored, 1-2 stars",M,,2.0
+156750,1,"anchored, 1-2 stars",C,,1.0
+390876,1,"anchored, 1-2 stars",M,,1.0
+265623,1,"anchored, 1-2 stars",M,,1.0
+120265,2,"anchored, 1-2 stars",M,,2.0
+213275,2,"anchored, 4-5 stars",C,,5.0
+568104,2,"anchored, 1-2 stars",C,,2.0
+477713,2,"anchored, 4-5 stars",I,fulfilment_or_seller,4.0
+584932,2,"anchored, 1-2 stars",M,,2.0
+135910,2,"anchored, 4-5 stars",M,,4.0
+507409,2,"anchored, 4-5 stars",I,product_problem,4.0
+601569,2,"anchored, 4-5 stars",C,,5.0
+34979,2,"anchored, 1-2 stars",C,,1.0
+118044,2,"anchored, 4-5 stars",I,product_problem,4.0
+59555,2,"anchored, 4-5 stars",I,product_problem,4.0
+571107,2,"anchored, 4-5 stars",I,product_problem,5.0
+389532,2,"anchored, 1-2 stars",C,,1.0
+682200,2,"anchored, 4-5 stars",I,product_problem,5.0
+155491,2,"anchored, 1-2 stars",C,,1.0
+595690,2,"anchored, 1-2 stars",C,,2.0
+101715,2,"anchored, 4-5 stars",U,,5.0
+636624,2,"anchored, 4-5 stars",M,,4.0
+46733,2,"anchored, 4-5 stars",I,product_problem,4.0
+304746,2,"anchored, 1-2 stars",M,,2.0
+659997,2,"anchored, 1-2 stars",I,praise_low_stars,1.0
+659048,2,"anchored, 1-2 stars",C,,1.0
+344997,2,"anchored, 1-2 stars",C,,1.0
+350042,2,"anchored, 4-5 stars",I,fulfilment_or_seller,4.0
+537690,2,"anchored, 1-2 stars",C,,1.0
+117056,2,"anchored, 4-5 stars",M,,4.0
+318056,2,"anchored, 4-5 stars",C,,5.0
+299056,2,"anchored, 4-5 stars",C,,5.0
+666148,2,"anchored, 1-2 stars",C,,2.0
+490306,2,"anchored, 1-2 stars",M,,2.0
+375821,2,"anchored, 1-2 stars",C,,2.0
+352138,2,"anchored, 4-5 stars",M,,4.0
+246025,2,"anchored, 1-2 stars",C,,2.0
+481196,2,"anchored, 1-2 stars",C,,2.0
+504731,2,"anchored, 4-5 stars",M,,4.0
+479042,2,"anchored, 4-5 stars",C,,5.0
+213666,2,"anchored, 4-5 stars",C,,4.0
+483578,2,"anchored, 4-5 stars",I,fulfilment_or_seller,4.0
+169516,2,"anchored, 1-2 stars",M,,1.0
+684696,2,"anchored, 4-5 stars",I,product_problem,5.0
+527435,2,"anchored, 1-2 stars",C,,2.0
+628304,2,"anchored, 1-2 stars",C,,1.0
+136556,2,"anchored, 4-5 stars",I,product_problem,5.0
+604791,2,"anchored, 4-5 stars",M,,5.0
+22463,2,"anchored, 1-2 stars",I,praise_low_stars,2.0
+139490,2,"anchored, 1-2 stars",C,,1.0
+320317,2,"anchored, 1-2 stars",M,,2.0
+85046,2,"anchored, 4-5 stars",M,,4.0
+498199,2,"anchored, 4-5 stars",C,,5.0
+578841,2,"anchored, 1-2 stars",C,,2.0
+27842,2,"anchored, 4-5 stars",I,product_problem,5.0
+602604,2,"anchored, 4-5 stars",I,fulfilment_or_seller,5.0
+298538,2,"anchored, 1-2 stars",C,,2.0
+68811,2,"anchored, 1-2 stars",M,,1.0
+100042,2,"anchored, 1-2 stars",M,,1.0
+118886,2,"anchored, 4-5 stars",C,,5.0
+465390,2,"anchored, 1-2 stars",I,praise_low_stars,2.0
+262793,2,"anchored, 4-5 stars",I,fulfilment_or_seller,4.0
+86584,2,"anchored, 1-2 stars",C,,2.0
+650978,2,"anchored, 4-5 stars",M,,4.0
+156854,2,"anchored, 4-5 stars",M,,5.0
+257275,2,"anchored, 1-2 stars",C,,2.0
+536570,2,"anchored, 1-2 stars",I,praise_low_stars,1.0
+516222,2,"anchored, 4-5 stars",I,product_problem,5.0
+208618,2,"anchored, 4-5 stars",M,,4.0
+85761,2,"anchored, 1-2 stars",C,,1.0
+134025,2,"anchored, 4-5 stars",I,product_problem,4.0
+107197,2,"anchored, 1-2 stars",I,placeholder_rating,1.0
+498450,2,"anchored, 1-2 stars",C,,2.0
+645942,2,"anchored, 4-5 stars",I,product_problem,4.0
+56841,2,"anchored, 4-5 stars",M,,4.0
+198343,2,"anchored, 1-2 stars",I,praise_low_stars,2.0
+34235,2,"anchored, 1-2 stars",I,praise_low_stars,2.0
+538376,2,"anchored, 4-5 stars",M,,4.0
+128105,2,"anchored, 1-2 stars",C,,1.0
+616926,2,"anchored, 4-5 stars",M,,4.0
+242064,2,"anchored, 1-2 stars",M,,1.0
+163191,2,"anchored, 4-5 stars",C,,4.0
+686013,2,"anchored, 1-2 stars",M,,1.0
+409188,2,"anchored, 1-2 stars",C,,1.0
+223530,3,"roberta-only, 4-5 stars",M,,4.0
+165382,3,"one-lexicon-only, 4-5 stars",C,,5.0
+232526,3,"unflagged, 1-2 stars",C,,1.0
+298072,3,"roberta-only, 4-5 stars",C,,5.0
+215726,3,"unflagged, 4-5 stars",C,,5.0
+553189,3,"one-lexicon-only, 1-2 stars",C,,2.0
+25561,3,"roberta-only, 4-5 stars",C,,4.0
+401049,3,"one-lexicon-only, 1-2 stars",C,,1.0
+196960,3,"one-lexicon-only, 1-2 stars",C,,1.0
+510390,3,"roberta-only, 4-5 stars",M,,5.0
+33304,3,"unflagged, 4-5 stars",C,,5.0
+641865,3,"unflagged, 4-5 stars",C,,5.0
+641907,3,"one-lexicon-only, 1-2 stars",C,,1.0
+597157,3,"roberta-only, 4-5 stars",M,,4.0
+210244,3,"one-lexicon-only, 4-5 stars",C,,5.0
+370994,3,"roberta-only, 1-2 stars",C,,1.0
+271334,3,"one-lexicon-only, 1-2 stars",C,,2.0
+352627,3,"unflagged, 4-5 stars",C,,5.0
+57217,3,"one-lexicon-only, 1-2 stars",C,,1.0
+539343,3,"one-lexicon-only, 1-2 stars",C,,1.0
+153149,3,"unflagged, 4-5 stars",C,,5.0
+607846,3,"one-lexicon-only, 1-2 stars",C,,2.0
+475247,3,"roberta-only, 4-5 stars",C,,4.0
+614505,3,"unflagged, 4-5 stars",C,,5.0
+9431,3,"roberta-only, 4-5 stars",M,,4.0
+612933,3,"one-lexicon-only, 4-5 stars",C,,5.0
+436790,3,"roberta-only, 4-5 stars",C,,5.0
+640433,3,"roberta-only, 4-5 stars",I,fulfilment_or_seller,4.0
+129122,3,"one-lexicon-only, 1-2 stars",C,,2.0
+472628,3,"unflagged, 4-5 stars",C,,5.0
+597212,3,"one-lexicon-only, 1-2 stars",C,,1.0
+152960,3,"roberta-only, 1-2 stars",C,,1.0
+304955,3,"one-lexicon-only, 1-2 stars",C,,2.0
+471415,3,"one-lexicon-only, 4-5 stars",C,,4.0
+388204,3,"roberta-only, 4-5 stars",C,,5.0
+529072,3,"roberta-only, 4-5 stars",C,,5.0
+113837,3,"one-lexicon-only, 1-2 stars",C,,2.0
+424550,3,"unflagged, 4-5 stars",C,,5.0
+343971,3,"one-lexicon-only, 1-2 stars",C,,1.0
+459381,3,"unflagged, 4-5 stars",C,,4.0
+690274,3,"roberta-only, 4-5 stars",C,,5.0
+515521,3,"roberta-only, 4-5 stars",C,,5.0
+623424,3,"one-lexicon-only, 1-2 stars",C,,1.0
+163107,3,"roberta-only, 4-5 stars",M,,4.0
+371910,3,"unflagged, 4-5 stars",C,,5.0
+129052,3,"unflagged, 4-5 stars",C,,5.0
+679399,3,"roberta-only, 4-5 stars",C,,4.0
+528214,3,"unflagged, 4-5 stars",C,,5.0
+551910,3,"one-lexicon-only, 1-2 stars",C,,1.0
+526512,3,"roberta-only, 4-5 stars",I,product_problem,4.0
+383385,3,"one-lexicon-only, 1-2 stars",C,,1.0
+118343,3,"one-lexicon-only, 1-2 stars",C,,1.0
+573845,3,"unflagged, 4-5 stars",C,,5.0
+387187,3,"one-lexicon-only, 4-5 stars",U,,5.0
+409698,3,"roberta-only, 4-5 stars",I,product_problem,5.0
+591051,3,"roberta-only, 4-5 stars",I,product_problem,4.0
+307034,3,"one-lexicon-only, 1-2 stars",C,,1.0
+404461,3,"one-lexicon-only, 1-2 stars",C,,2.0
+98352,3,"roberta-only, 4-5 stars",M,,4.0
+556427,3,"unflagged, 4-5 stars",C,,5.0
+247523,3,"one-lexicon-only, 1-2 stars",C,,2.0
+116654,3,"roberta-only, 4-5 stars",C,,4.0
+502479,3,"one-lexicon-only, 1-2 stars",C,,1.0
+348256,3,"unflagged, 4-5 stars",C,,5.0
+642775,3,"one-lexicon-only, 4-5 stars",C,,4.0
+256476,3,"roberta-only, 4-5 stars",C,,5.0
+331118,3,"roberta-only, 4-5 stars",I,fulfilment_or_seller,5.0
+192176,3,"one-lexicon-only, 1-2 stars",C,,1.0
+187783,3,"roberta-only, 4-5 stars",C,,5.0
+528779,3,"unflagged, 4-5 stars",C,,4.0
+334936,3,"roberta-only, 4-5 stars",I,product_problem,4.0
+468117,3,"roberta-only, 4-5 stars",I,product_problem,4.0
+566829,3,"roberta-only, 4-5 stars",C,,4.0
+538430,3,"one-lexicon-only, 1-2 stars",C,,1.0
+5569,3,"unflagged, 4-5 stars",C,,5.0
+584499,3,"one-lexicon-only, 1-2 stars",C,,1.0
+204858,3,"unflagged, 4-5 stars",C,,5.0
+161623,3,"roberta-only, 4-5 stars",C,,4.0
+576533,3,"roberta-only, 4-5 stars",M,,4.0
+695936,3,"unflagged, 4-5 stars",C,,5.0

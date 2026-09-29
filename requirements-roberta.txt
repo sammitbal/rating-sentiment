@@ -1,0 +1,6 @@
+# Optional: only needed to recompute the RoBERTa scores yourself
+#     python run_pipeline.py --recompute-roberta
+# For a GPU, install the matching PyTorch build first (see README, "Recomputing the RoBERTa scores").
+torch>=2.2
+transformers>=4.40
+# Intel GPUs (Arc, Core Ultra) and a faster CPU path on x86:  pip install openvino
