@@ -1,6 +1,6 @@
 # How the project answers the research questions
 
-**Overall:** ratings and text agree far more often than sentiment tools suggest. Only about 1 in 125 1–2★ or 4–5★ reviews genuinely contradicts its stars. Those contradictions are mostly 4★ reviews reporting a problem, and readers find them *more* helpful.
+**Overall:** ratings and text agree far more often than sentiment tools suggest. Only about 1 in 125 1–2★ or 4–5★ reviews genuinely contradicts its stars. Those contradictions are mostly 4★ reviews reporting a problem, and readers find them *more* helpful. Over time, products with a bad start usually stay rough: they recover less often than chance would produce (Q5).
 
 ## Q1. How often does the rating disagree with the written sentiment?
 
@@ -49,6 +49,23 @@
 - **Low stars with positive text show no reliable difference.**
 - **None of this improves prediction.** Adding the consistency measures does not help predict which reviews will be voted helpful.
 
+## Q5. Do products get better over time, so that their negative reviews fade?
+
+**Not as a general pattern. A few products do recover, but fewer than chance alone would produce.**
+
+- **Scope:** 3,444 products with at least 30 reviews over at least a year (3.1% of products, 43% of all reviews).
+- **Rough starts do not recover.**
+  - 467 products start rough, meaning their first third of reviews averages 3.5★ or less. Only 40 of them improve by a star or more, against about 62 when each product's ratings are shuffled across its own timeline.
+  - Rough starters gain +0.01★ on average. The shuffled data predicts +0.24★.
+- **Negative reviews rarely disappear.** 9 products go from 30%+ 1–2★ reviews to 5% or less, against 8–21 under shuffling, so there is nothing beyond chance.
+- **Real recoveries exist.** A lip gloss base climbs from 2.4★ to 4.1★ over 91 reviews, and a hair dryer from 2.8★ to 4.6★ over 40. They show what a recovery looks like, not how common it is.
+- **Early reviews may be kinder than later ones (a hint, not a tested result).**
+  - Fewer products start rough than shuffling predicts (467 against 678).
+  - The most-reviewed product slips from 4.74★ to 4.52★, and its 1–2★ share rises from 3% to 9%.
+  - Category-wide, the mean rating fell from 4.18★ in 2014 to 3.77★ in 2022, and the 1–2★ share rose from 14% to 26%. Different products are reviewed in different years, so this is not the same as products getting worse.
+- **The words follow the stars.** Among rough starters the change in rating and the change in text sentiment correlate at ρ = 0.88, so a recovery shows in what people write and not only in the stars.
+- **The finding holds under seven different definitions.** In none does the real data show more recovery than chance.
+
 ## What this adds to Kung et al. (2024)
 
 - The paper never measured whether ratings and text agree. This project builds that measure and checks it by hand.
@@ -58,4 +75,5 @@
 
 - **Who checked the flags:** the 250-review check was done by an AI assistant, not by independent human annotators. `reports/validation_sample.csv` holds 300 reviews ready for human labelling.
 - **Scope:** the results come from one category (All_Beauty).
+- **Time (Q5):** the product analysis rests on the 3.1% of products with a long history. A change in who reviews cannot be told apart from a change in the product, and "fewer recoveries than chance" partly reflects that product quality persists. The safe reading is no evidence of more recovery than chance.
 - **Helpfulness is observational:** vote counts also reflect how Amazon sorts and displays reviews, so the helpfulness results are associations, not causes.

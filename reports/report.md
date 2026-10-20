@@ -46,6 +46,15 @@ reproduced exactly (0.969), but it comes from **target leakage**: the reviewer-h
 the review being predicted. Rebuilt from earlier reviews only, accuracy is 0.743, against 0.733 for
 always predicting "no vote", and AUC falls from 0.992 to 0.625.
 
+**6. Do products recover over time, so that their negative reviews fade?** **Not as a general pattern.**
+Of the 3,444 products with at least 30 reviews over at least a year, 467 start rough (their first third
+of reviews averages 3.5★ or less), and 40 of those improve by a star or more. Shuffling each product's
+ratings in time produces about 62. Rough starters gain +0.01★ on average, where the shuffled data
+predicts +0.24★, and 9 products lose their negative reviews (from 30%+ to 5% or less), against 8 to 21
+expected. Real recoveries exist, such as a lip gloss base that climbs from 2.4★ to 4.1★, but they are
+rarer than chance. Where stars do improve, the words improve with them (ρ = 0.88). Category-wide,
+ratings fell from 4.18★ in 2014 to 3.77★ in 2022, and the share of 1–2★ reviews rose from 14% to 26%.
+
 ---
 
 ## 1. Questions and sources
@@ -56,6 +65,9 @@ The project asks four questions about Amazon reviews:
 2. What factors predict these disagreements?
 3. Are some reviewers systematically more likely to give ratings that disagree with their text?
 4. Are those reviews more or less helpful?
+
+A fifth question was added later: **5. Do products' reviews change over time, so that early complaints
+fade as a product improves?** Section 4.6 answers it.
 
 **Data.** The source is Amazon Reviews '23 (Hou et al., 2024; McAuley Lab, UCSD), *All_Beauty*
 category, with item metadata. It is the category analysed by **Kung, Orlando & Kirimlioglu (2024)**,
@@ -314,6 +326,89 @@ length, photos and product popularity.
 
 ![Prediction AUC](figures/06_prediction_auc.png)
 
+### 4.6 Do products recover over time? (Q5)
+
+The first four questions treat each review on its own. This one follows **each product through time**.
+A product may collect poor reviews early, say after a faulty first batch, and then improve, so that
+later reviews are better and the negative ones thin out. Notebook 7 tests whether that happens.
+
+**Method.** Each product's reviews are put in time order, and its first and last third are compared.
+Only products with at least 30 reviews spread over at least a year are analysed: **3,444 of 112,565
+products (3.1%), holding 295,306 reviews (43% of all reviews)**. Three flags are used:
+
+* **rough start**: the first third averages 3.5★ or less
+* **improved**: a rough start, and the last third averages at least 1★ more
+* **faded**: at least 30% of the first third are 1–2★, and at most 5% of the last third
+
+A product picked for a bad start tends to look better later even if nothing changed, a pattern known as
+regression to the mean. To measure how much, each product's ratings are shuffled across its own
+timeline 200 times and the whole procedure is repeated. The shuffled data has the same products, the
+same ratings and the same selection effect. It lacks only the real order in time, so the real data has
+to beat it to count as evidence of genuine recovery. On synthetic reviews the procedure finds planted
+recoveries and does not invent any when none exist (`tests/test_timeseries.py`).
+
+| | real data | shuffled data: mean (95% range) |
+|---|---|---|
+| Products with a rough start | 467 (13.6%) | 678 (651–704), 19.7% |
+| …of which improved by 1★ or more | 40 | 62 (48–79) |
+| Products whose negative reviews faded | 9 | 14 (8–21) |
+| Average change of rough-start products, first to last third | **+0.01★** | **+0.24★** (0.20–0.28) |
+
+The one-sided p-values (the share of shuffles that did at least as well as the real data) are 1.00,
+1.00, 0.94 and 1.00. Almost every shuffle produced at least as much recovery as the real data did.
+
+![Recovery curve](figures/07_recovery_curve.png)
+
+The curve cuts each rough-start product's history into ten slices. The shaded first third is where the
+products were *selected* for being rough, so it is low by construction. After it, the real products
+stay at about 3.0★ (between 2.9★ and 3.1★), while the shuffled data climbs to about 3.2★. The share of
+1–2★ reviews stays at 43–47%, where the shuffled data drifts down to about 39%.
+
+**What the results say**
+
+* **Recovery is not a general pattern. It is rarer than chance.** Only 40 products (1.2% of those
+  analysed, 8.6% of the rough starters) improve by a star or more, where the shuffled data predicts 62
+  (1.8%, 9.2%). The typical rough starter does not recover: +0.01★ against +0.24★ by chance.
+* **Fading negative reviews: nothing beyond chance.** 9 products go from 30%+ 1–2★ reviews to 5% or
+  less. The shuffled data gives 8 to 21.
+* **Early reviews may be kinder than later ones.** The real data has fewer rough starts than the
+  shuffled data (467 against 678): a product's first third is less often rough than a random third of
+  its own ratings would be. That is consistent with a decline after a good start, not a recovery, but
+  the notebook does not measure the average first-to-last change across all products, so this is a
+  hint and not a result. The most-reviewed product illustrates it: for the Salux nylon bath wash cloth
+  (1,952 reviews) the average falls from 4.74★ early to 4.52★ late, and its 1–2★ share rises from 3%
+  to 9%.
+* **Category-wide, ratings fell.** The mean rating was 4.18★ in 2014 and 3.77★ in 2021 and 2022. The
+  share of 1–2★ reviews rose from 14.2% to 26.0% (2021) and 25.8% (2022). Different products are
+  reviewed in different years, so this is not the same as individual products getting worse.
+* **Words follow stars.** Among rough-start products, the change in mean rating and the change in text
+  sentiment (RoBERTa) correlate at ρ = 0.88 (n = 467). The text moves −0.01 on average across them and
+  +0.51 among the 40 that improved. Where a product recovers, the improvement is in what people write,
+  not only in the stars they click.
+* **Robust to the definition.** Under seven settings (first and last quarter or half instead of third,
+  rough start at 3.0★ or 4.0★, a gain of 0.5★ or 1.5★), the real number of improved products is below
+  the shuffled average every time (p = 1.00, except p = 0.75 for a 1.5★ gain, where the counts are 7
+  and 8.7). The rough starters' average change ranges from −0.12★ to +0.16★, against +0.15★ to +0.30★
+  when shuffled.
+
+![Overall trend](figures/07_overall_trend.png)
+
+![Strongest recoveries](figures/07_top_improvers.png)
+
+The second figure shows the six strongest recoveries, for example a lip gloss base (2.4★ to 4.1★ over
+91 reviews) and a hair dryer (2.8★ to 4.6★ over 40). Their 1–2★ share falls from 38–63% of the first
+third of reviews to 8–29% of the last. They were picked *because* they recovered most, so they show what
+a recovery looks like, not how often one happens.
+
+**Interpretation.** The idea that a product's bad reviews disappear as it improves describes a small
+number of products, not the typical one. The typical product with a rough start stays rough. Two
+explanations are plausible but untested here: a product's quality, seller and listing persist, so its
+early average says something about its later reviews, and early buyers may be kinder than later ones.
+The shuffled benchmark is strict, since it removes any link between order and rating. Persistence alone
+therefore pushes the real data below it. The safe reading is that there is **no evidence of more
+recovery than chance**. The downward drift is a separate observation, and testing it directly (the
+first-to-last change across all products, against the same shuffled benchmark) is a natural next step.
+
 ## 5. Limitations
 
 * **One category.** All_Beauty may not generalise: electronics and books reviews differ in length and
@@ -334,6 +429,12 @@ length, photos and product popularity.
   page.
 * **Reviewer analysis power.** 93% of reviewers wrote one review in this category. Adding the same
   users' reviews from other categories would strengthen Q3 considerably.
+* **Thin product histories (Q5).** Only 3.1% of products have 30 or more reviews over a year, and the
+  first third of a product near that minimum is a noisy average. Reviews are ordered in time within a
+  product, so a change in *who* reviews (more verified buyers, a seller asking for reviews) cannot be
+  told apart from a change in the product. The shuffled benchmark removes order entirely, so "fewer
+  recoveries than chance" partly reflects that product quality persists. The category-wide yearly trend
+  mixes different products each year.
 
 ## 6. Reproducing
 
@@ -341,7 +442,8 @@ Run `python run_pipeline.py` after installing `requirements.txt`; the [README](.
 step-by-step instructions for Windows, macOS and Linux. No GPU is needed: the RoBERTa scores ship in
 `data/precomputed/`, and `--recompute-roberta` regenerates them on any supported hardware. Every
 number in this report comes from the executed notebooks in `notebooks/`, and every figure is in
-`reports/figures/`.
+`reports/figures/`. The checks for the time-series code (§4.6) run on synthetic reviews, with no
+download: `python tests/test_timeseries.py`.
 
 ## References
 

@@ -276,8 +276,8 @@ def plot_improvers(products, table, n=6, freq="H", min_n=3):
         name = _label(row.get("product_title"), row.parent_asin)
         plot_product(reviews, ax, ax_neg, freq, min_n,
                      title=f"{name}  ·  {row.early_mean:.1f}★ → {row.late_mean:.1f}★  (n={row.n_reviews})")
-    fig.suptitle("Products whose reviews got better over time", x=0.01, ha="left", fontsize=13,
-                 fontweight="semibold")
+    fig.suptitle("The strongest recoveries (picked to show the pattern, not typical products)", x=0.01,
+                 ha="left", fontsize=13, fontweight="semibold")
     return fig, top
 
 
