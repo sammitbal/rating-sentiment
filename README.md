@@ -74,7 +74,7 @@ ships precomputed, so you need neither PyTorch nor a graphics card.
 | 3. VADER + TextBlob | lexicon sentiment scores for every review | `data/processed/sentiment_lexicon.parquet` | ~2 min |
 | 4. RoBERTa | installs the shipped scores, after checking they match your data | `data/processed/sentiment_roberta.parquet` | seconds |
 | 5. Analysis table | joins everything and defines inconsistency | `data/processed/analysis.parquet` | ~1 min |
-| 6. Notebooks | re-executes the six notebooks, which redraws every figure | `notebooks/*.ipynb`, `reports/figures/` | ~3 min |
+| 6. Notebooks | re-executes the seven notebooks, which redraws every figure | `notebooks/*.ipynb`, `reports/figures/` | ~4 min |
 
 \*Measured on the development laptop (Intel Core Ultra 7, 32 GB RAM). Expect about 10 minutes plus
 the download.
@@ -89,9 +89,29 @@ You can safely run the command again: finished steps are skipped. Two options ch
 |---|---|
 | `reports/research_questions.md` | short answers to the research questions |
 | `reports/report.md` | the full write-up |
-| `notebooks/01_…` to `06_…` | the analysis, in order. Open them with `jupyter lab`, with the virtual environment active |
+| `notebooks/01_…` to `07_…` | the analysis, in order. Open them with `jupyter lab`, with the virtual environment active |
 | `reports/figures/` | every chart, as PNG |
 | `reports/validation_sample.csv` | 300 reviews with empty label columns, for hand-checking the detector (made by notebook 3) |
+
+## Reviews over time: do products recover?
+
+Notebook 7 follows each product through time. Does a product that drew poor reviews early get better
+later, and do its negative reviews fade? Products picked for a bad start improve somewhat by chance
+alone, so the notebook compares the real data with copies in which each product's ratings are shuffled
+across its own timeline. Only improvement beyond that counts.
+
+After `python run_pipeline.py` has built the analysis table, you can also draw single products from the
+command line, with the virtual environment active:
+
+```
+python src/timeseries.py --list 15            # the 15 most-reviewed products, to pick from
+python src/timeseries.py --asin B07XXXXXXX    # timeline of one product (use a parent_asin from the list)
+python src/timeseries.py --top 6              # the six strongest recoveries, side by side
+python src/timeseries.py --top 6 --freq Q     # same, by quarter (Y, H = half-year, Q or M)
+```
+
+Figures go to `reports/figures/` as `07_*.png`. The checks for this code run on synthetic reviews, with
+no download: `python tests/test_timeseries.py`.
 
 ## Optional: recompute the RoBERTa scores on your own hardware
 
@@ -185,6 +205,7 @@ src/
                          OpenVINO or CPU; resumable
   precomputed.py         installs (or exports) the shipped RoBERTa scores, after checking they fit
   build_features.py      inconsistency definitions + leakage-free reviewer/product features
+  timeseries.py          product trajectories over time: recovery test with a shuffled null, plots, CLI
   common.py              notebook helpers: colour-blind-safe plot style, Wilson CIs, forest plots
 notebooks/               *.py sources (jupytext) and *.ipynb notebooks with their outputs
   01_data_overview          replication of Kung et al.'s counts, cleaning, descriptives
@@ -193,6 +214,9 @@ notebooks/               *.py sources (jupytext) and *.ipynb notebooks with thei
   04_predictors             Q2: what predicts disagreement (logit ORs, boosting, distinctive terms)
   05_reviewers              Q3: systematic reviewers (leave-one-out concordance, permutation nulls)
   06_helpfulness            Q4: helpfulness (Poisson/logit/product FE) + leakage-free re-run of Kung et al.
+  07_time_series            extension: do products recover over time? negative reviews fading, tested
+                            against shuffled timelines
+tests/                   test_timeseries.py: runs on synthetic reviews, no data download needed
 data/
   precomputed/           shipped RoBERTa scores + manifest (in the repo)
   raw/, processed/       created by the pipeline (not in the repo)
