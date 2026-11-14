@@ -4,11 +4,6 @@ How often does a reviewer's star rating disagree with what they wrote? What pred
 disagreements? Are some reviewers systematically inconsistent? And are inconsistent reviews more or
 less helpful?
 
-The project answers these questions for the **All_Beauty** category of **Amazon Reviews '23**
-(Hou et al., 2024): 694,252 reviews after cleaning. It extends **Kung, Orlando & Kirimlioglu (2024)**,
-*Were You Helpful: Predicting Helpful Votes from Amazon Reviews* (arXiv:2412.02884), which studied
-helpful votes in the same category.
-
 **Results**
 - [reports/research_questions.md](reports/research_questions.md): short answers to the four questions
 - [reports/report.md](reports/report.md): the full write-up, with methods, figures and limitations
@@ -20,12 +15,6 @@ helpful votes in the same category.
 
 The project runs on Windows, macOS and Linux, with or without a GPU. The slow sentiment-model step
 ships precomputed, so you need neither PyTorch nor a graphics card.
-
-**What you need**
-- **Python 3.10 or newer**, from [python.org](https://www.python.org/downloads/). To check, run
-  `python --version` (on macOS/Linux: `python3 --version`).
-- **About 2 GB of free disk space**: roughly 0.7 GB of data and 1 GB of Python packages.
-- **An internet connection.** The pipeline downloads 134 MB of review data from UCSD.
 
 **Steps.** Type these commands in a terminal: PowerShell on Windows, Terminal on macOS and Linux.
 
@@ -139,9 +128,6 @@ cleaning code or want to verify the scores yourself.
 | Intel GPU (Arc, Core Ultra) | `python -m pip install torch openvino` | `openvino-gpu` | ~15 min |
 | Intel GPU, PyTorch XPU build | the XPU command from [pytorch.org](https://pytorch.org/get-started/locally/) | `xpu` | not timed |
 | any CPU | Windows/Linux: `python -m pip install torch --index-url https://download.pytorch.org/whl/cpu`; macOS: `python -m pip install torch` | `cpu`, or `openvino-cpu` after `pip install openvino` | ~8 hours |
-
-\*On the development laptop (Intel Core Ultra 7 268V with Arc 140V graphics). The CPU figure is
-extrapolated from a 2,000-review run.
 
 Some things to know before recomputing:
 - **Model download.** The first run downloads the model, about 500 MB, from Hugging Face.
