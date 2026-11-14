@@ -171,12 +171,6 @@ python src/build_features.py
 jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb
 ```
 
-**Editing notebooks.** The notebook sources are the `notebooks/*.py` files, in jupytext's "percent"
-format. After editing one, regenerate its notebook with `jupytext --to ipynb notebooks/<name>.py`.
-
-**Refreshing the shipped scores.** After recomputing, run
-`python src/precomputed.py export --note "<hardware used>"` and commit `data/precomputed/`.
-
 ## Project layout
 
 ```
@@ -218,8 +212,6 @@ requirements-lock.txt    the exact versions behind the published results
 
 ## Definitions
 
-These definitions are implemented in `src/build_features.py`.
-
 - **Polar rating**: 1–2★ (negative) or 4–5★ (positive). A 3★ rating has no opposite, so 3★ reviews
   are excluded.
 - **Reversal (per model)**: text polarity opposite to the rating polarity. VADER and TextBlob use
@@ -232,10 +224,6 @@ These definitions are implemented in `src/build_features.py`.
   outcome.
 
 ## Data and citations
-
-The review data is not stored in this repository: `src/download.py` fetches it from the McAuley Lab
-at UCSD. The files in `data/precomputed/` and `reports/audit_labels.csv` contain only review ids,
-scores and labels, not review text. If you use the data, please cite Hou et al. (2024).
 
 - Hou, Y., Li, J., He, Z., Yan, A., Chen, X., & McAuley, J. (2024). *Bridging Language and Items for
   Retrieval and Recommendation.* arXiv:2403.03952. https://amazon-reviews-2023.github.io/
