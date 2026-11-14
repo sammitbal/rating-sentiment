@@ -106,6 +106,51 @@ def test_period_tables_handle_time_zones():
     assert ts.period_start(df.time.dt.tz_localize(None), "Y").dt.month.eq(1).all()
 
 
+def test_mismatch_counts():
+    # One product: 9 reviews, the first three 5-star with negative text (mismatches), the last three
+    # 1-star with positive text (mismatches), and 3-star reviews that can never mismatch.
+    n = 9
+    t0 = pd.Timestamp("2020-01-01", tz="UTC")
+    df = pd.DataFrame({
+        "parent_asin": "X", "review_id": np.arange(n),
+        "time": [t0 + pd.Timedelta(days=30 * i) for i in range(n)],
+        "rating": [5, 5, 5, 3, 3, 3, 1, 1, 1], "polar_rating": [True] * 3 + [False] * 3 + [True] * 3,
+        "inconsistent": [True] * 3 + [False] * 3 + [True] * 3,
+    })
+    counts = ts.mismatch_by_third(df, frac=1 / 3).iloc[0]
+    assert (counts.k_early, counts.n_early) == (3, 3)
+    assert (counts.k_late, counts.n_late) == (3, 3)
+    # Period table: a 3-star review is excluded from the denominator, so 6 polar reviews in total.
+    t = ts.mismatch_table(df, "Y")
+    assert t.n.sum() == 6 and t.k.sum() == 6
+    # Tolerance for rounding: at a rate of exactly 1 the upper bound is 1.0 up to ~1e-16.
+    assert (t.mismatch_lo <= t.mismatch_rate + 1e-9).all()
+    assert (t.mismatch_rate <= t.mismatch_hi + 1e-9).all()
+
+
+def test_mismatch_change_removes_platform_trend():
+    # Every product follows the same calendar-year drift in mismatch rates and no product-level change.
+    # The platform-adjusted change must then be close to zero, although the raw first-to-last change
+    # is clearly positive (later reviews fall in years with more mismatches).
+    rng = np.random.default_rng(9)
+    rows = []
+    for p in range(400):
+        n = 60
+        t = pd.Timestamp("2015-01-01", tz="UTC") + pd.to_timedelta(np.sort(rng.uniform(0, 8, n)) * 365.25, unit="D")
+        year = t.year.to_numpy()
+        rate = np.where(year >= 2019, 0.06, 0.02)  # the platform gets more mismatched after 2019
+        rows.append(pd.DataFrame({"parent_asin": f"P{p}", "time": t, "rating": 5, "polar_rating": True,
+                                  "inconsistent": rng.uniform(size=n) < rate, "review_id": np.arange(n)}))
+    df = pd.concat(rows, ignore_index=True)
+    df = ts.baseline_by_year(df)
+    t = ts.mismatch_vs_baseline(df)
+    raw = t.obs_late.sum() / t.n_late.sum() - t.obs_early.sum() / t.n_early.sum()
+    res = ts.mismatch_change(t, n_boot=500)
+    assert raw > 0.02, "the raw change should show the platform drift"
+    assert abs(res.change) < 0.01, res
+    assert res.ci_lo <= res.change <= res.ci_hi
+
+
 def test_figures_draw():
     import matplotlib.pyplot as plt
     ts.set_style()

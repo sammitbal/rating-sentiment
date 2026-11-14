@@ -218,6 +218,100 @@ def period_table(df, freq="Y", min_n=1):
 
 
 # ---------------------------------------------------------------------------------------------
+# Mismatches: a review whose text contradicts its stars (the working flag from build_features)
+# ---------------------------------------------------------------------------------------------
+MISMATCH = "inconsistent"  # polar review, reversed by RoBERTa and at least one lexicon model
+
+
+def mismatch_table(df, freq="Y", min_n=1):
+    """Share of polar reviews per period whose text contradicts the stars, with a Wilson 95% interval.
+
+    3-star reviews are excluded: a neutral rating cannot contradict its text.
+    """
+    p = df[df.polar_rating]
+    d = p.assign(period=period_start(p.time, freq))
+    t = d.groupby("period").agg(n=("rating", "size"), k=(MISMATCH, "sum")).reset_index()
+    t = t[t.n >= min_n].copy()
+    t["mismatch_rate"], t["mismatch_lo"], t["mismatch_hi"] = wilson(t.k, t.n)
+    return t
+
+
+def mismatch_by_third(frame, frac=FRAC):
+    """Per product: mismatching and polar reviews in its first and last third of reviews.
+
+    Thirds are taken over all of a product's reviews, as in the recovery flags. Mismatches are
+    always polar reviews, so the counts are over polar reviews. Returns counts, not rates, so that
+    they can be pooled across products.
+    """
+    rows = []
+    for asin, g in frame.groupby("parent_asin", sort=False):
+        k = max(1, int(round(len(g) * frac)))
+        pol, mis = g.polar_rating.to_numpy(bool), g[MISMATCH].to_numpy(bool)
+        rows.append({"parent_asin": asin,
+                     "k_early": int(mis[:k].sum()), "n_early": int(pol[:k].sum()),
+                     "k_late": int(mis[-k:].sum()), "n_late": int(pol[-k:].sum())})
+    return pd.DataFrame(rows)
+
+
+def baseline_by_year(frame):
+    """Attach `expected`: the platform-wide mismatch share of the review's calendar year.
+
+    Computed over the polar reviews in `frame`, so it is the rate a review in that year would have
+    had on average. Comparing a product with this baseline removes the drift in mismatches over time.
+    """
+    year = period_start(frame.time, "Y")
+    polar = frame.polar_rating.astype(bool)
+    base = frame[polar].groupby(year[polar]).inconsistent.mean()
+    return frame.assign(expected=year.map(base).astype(float))
+
+
+def mismatch_vs_baseline(frame, frac=FRAC):
+    """Per product: observed and expected mismatches over its first and last third (polar reviews only).
+
+    `frame` needs `polar_rating`, `inconsistent` and `expected` (see baseline_by_year).
+    """
+    rows = []
+    for asin, g in frame.groupby("parent_asin", sort=False):
+        k = max(1, int(round(len(g) * frac)))
+        pol = g.polar_rating.to_numpy(bool)
+        mis = g[MISMATCH].to_numpy(bool)
+        exp = g.expected.to_numpy(float)
+        rows.append({"parent_asin": asin,
+                     "obs_early": mis[:k][pol[:k]].sum(), "exp_early": exp[:k][pol[:k]].sum(),
+                     "n_early": pol[:k].sum(),
+                     "obs_late": mis[-k:][pol[-k:]].sum(), "exp_late": exp[-k:][pol[-k:]].sum(),
+                     "n_late": pol[-k:].sum()})
+    return pd.DataFrame(rows)
+
+
+def mismatch_change(t, n_boot=4000, seed=0):
+    """How much a product's mismatch share changes from first to last third, beyond the platform trend.
+
+    Each third is measured as its observed share minus the share expected from the platform in those
+    years (the excess, in percentage points). The change is last minus first. The interval comes from
+    resampling products, so products are the unit of replication.
+    """
+    cols = ["obs_early", "exp_early", "n_early", "obs_late", "exp_late", "n_late"]
+    a = t[cols].to_numpy(float)
+
+    def excess_change(sums):  # sums: (..., 6) columns in `cols` order
+        oe, ee, ne, ol, el, nl = np.moveaxis(sums, -1, 0)
+        return (ol - el) / nl - (oe - ee) / ne
+
+    total = a.sum(axis=0)
+    rng = np.random.default_rng(seed)
+    boot = excess_change(a[rng.integers(0, len(a), (n_boot, len(a)))].sum(axis=1))
+    oe, ee, ne, ol, el, nl = total
+    return pd.Series({
+        "observed_early": oe / ne, "observed_late": ol / nl,
+        "expected_early": ee / ne, "expected_late": el / nl,
+        "excess_early": (oe - ee) / ne, "excess_late": (ol - el) / nl,
+        "change": excess_change(total),
+        "ci_lo": np.percentile(boot, 2.5), "ci_hi": np.percentile(boot, 97.5),
+    })
+
+
+# ---------------------------------------------------------------------------------------------
 # Figures
 # ---------------------------------------------------------------------------------------------
 def format_years(ax):

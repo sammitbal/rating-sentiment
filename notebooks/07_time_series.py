@@ -37,7 +37,8 @@ import timeseries as ts
 from common import BLUE, INK_2, NEUTRAL, RED, load, savefig, set_style, spearman
 
 set_style()
-df = load(columns=["review_id", "parent_asin", "product_title", "time", "rating", "roberta"])
+df = load(columns=["review_id", "parent_asin", "product_title", "time", "rating", "roberta",
+                   "polar_rating", "inconsistent"])
 print(f"{len(df):,} reviews of {df.parent_asin.nunique():,} products, "
       f"{df.time.min():%Y-%m-%d} to {df.time.max():%Y-%m-%d}")
 
@@ -161,6 +162,55 @@ if "text_gain" in table:
     savefig(fig, "07_stars_vs_words")
     print(f"Rough-start products: mean text change {rough.text_gain.mean():+.3f}; "
           f"among the {int(rough.improved.sum())} improved: {rough[rough.improved].text_gain.mean():+.3f}")
+
+# %% [markdown]
+# ## 4b · The most-reviewed product, year by year
+#
+# The average falls mostly in the last years, and 2023 has only a few reviews. The table shows the count
+# so you can judge how much each year's average can bear.
+
+# %%
+biggest_reviews = products.frame[products.frame.parent_asin == biggest.parent_asin]
+biggest_reviews.groupby(biggest_reviews.time.dt.year).rating.agg(
+    reviews="size", mean_rating="mean", share_1_2=lambda r: (r <= 2).mean()).round(3)
+
+# %% [markdown]
+# ## 5b · Do mismatches between stars and text fade over time?
+#
+# A mismatch is a polar review whose text contradicts its stars (notebook 3's working flag). Two
+# questions: does the platform-wide share of mismatches change across the years, and within each product,
+# are mismatches less common in its last third than in its first? Only polar reviews count, so 3★
+# reviews are left out of both the numerator and the denominator.
+
+# %%
+mis_year = ts.mismatch_table(products.frame, "Y")
+mis_year = mis_year[mis_year.n >= 200]
+
+fig, ax = plt.subplots(figsize=(8, 3.6))
+ax.fill_between(mis_year.period, 100 * mis_year.mismatch_lo, 100 * mis_year.mismatch_hi, color=RED,
+                alpha=0.2, linewidth=0)
+ax.plot(mis_year.period, 100 * mis_year.mismatch_rate, marker="o", color=RED)
+ax.set_ylabel("mismatched polar reviews (%)")
+ax.set_ylim(bottom=0)
+ax.set_title("Share of mismatched reviews per year (shaded: 95% interval)")
+ax.grid(axis="x", visible=False)
+ts.format_years(ax)
+savefig(fig, "07_mismatch_by_year")
+mis_year.assign(year=mis_year.period.dt.year).set_index("year")[["n", "k", "mismatch_rate"]].round(4)
+
+# %%
+# Raw shares first. The last third's reviews fall in later years, which had more mismatches overall, so
+# the raw change mixes product-level change with the platform's drift. The adjusted change compares each
+# third with the platform rate for the same years.
+adjusted = ts.baseline_by_year(products.frame)
+per_product = ts.mismatch_vs_baseline(adjusted)
+change = ts.mismatch_change(per_product)
+print(f"products analysed: {len(per_product):,}")
+print(f"mismatch share, first third: {100 * change.observed_early:.2f}%   "
+      f"last third: {100 * change.observed_late:.2f}%   (raw change {100 * (change.observed_late - change.observed_early):+.2f} points)")
+print(f"platform rate for the same years: first {100 * change.expected_early:.2f}%   last {100 * change.expected_late:.2f}%")
+print(f"adjusted change (last minus first, in points): {100 * change.change:+.2f}   "
+      f"95% CI {100 * change.ci_lo:+.2f} to {100 * change.ci_hi:+.2f}")
 
 # %% [markdown]
 # ## 6 · Do the conclusions depend on the definitions?
