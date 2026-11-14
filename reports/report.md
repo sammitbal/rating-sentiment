@@ -314,13 +314,17 @@ mostly mixed reviews and misclicks, which readers neither reward nor punish.
 
 ### 4.5 Revisiting Kung et al.'s helpful-vote prediction
 
-| features (gradient boosting, same 80/20 split) | accuracy | ROC AUC |
+| features (gradient boosting; test set of 138,851 reviews) | accuracy | ROC AUC |
 |---|---|---|
 | always predict "no helpful vote" | 0.733 | 0.500 |
 | Kung et al.: reviewer's mean helpful votes over **all** their reviews + images + timestamp | **0.969** | 0.992 |
 | same, with reviewer history from **earlier** reviews only | 0.743 | 0.625 |
-| + review and product features | 0.767 | 0.743 |
+| + review and product features | 0.769 | 0.747 |
 | + rating–sentiment consistency features | 0.767 | 0.741 |
+
+The reviews are split 70% train, 10% validation and 20% test (`data/splits/`). Each model's settings
+(number of boosting rounds and learning rate) were chosen on the validation set, and the test set was
+scored once with those settings.
 
 The paper's 0.969 is reproduced exactly, and it is an artefact. For the 93% of reviewers with a single
 review, "average helpful votes across the reviewer's reviews" *is* the target. Without the leak, the

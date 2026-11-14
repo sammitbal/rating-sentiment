@@ -33,12 +33,13 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.inspection import permutation_importance
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import train_test_split
 
 from common import (BLUE, HIGH_NEG, INK_2, LOW_POS, RED, SURFACE, forest, load, rate_table,
                     ratio_table, savefig, set_style)
+from splits import load_split
 
 set_style()
+split_ids = {part: load_split(part) for part in ("train", "test")}
 df = load()
 polar = df[df.polar_rating & df.avg_rating.notna()].copy()
 polar["price_missing"] = polar.price.isna()
@@ -179,7 +180,9 @@ importances, aucs = {}, {}
 for name, g in GROUPS.items():
     X = g[FEATURES].astype(float)
     y = g.inconsistent.astype(int)
-    X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, stratify=y, random_state=0)
+    # Same reviews as the shared split (src/splits.py): train on train, report on test.
+    in_train, in_test = g.review_id.isin(split_ids["train"]), g.review_id.isin(split_ids["test"])
+    X_tr, X_te, y_tr, y_te = X[in_train], X[in_test], y[in_train], y[in_test]
     model = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.08, random_state=0).fit(X_tr, y_tr)
     aucs[name] = roc_auc_score(y_te, model.predict_proba(X_te)[:, 1])
     sub = X_te.sample(min(len(X_te), 40000), random_state=0)

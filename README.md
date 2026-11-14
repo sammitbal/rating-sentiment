@@ -63,10 +63,9 @@ ships precomputed, so you need neither PyTorch nor a graphics card.
 | 3. VADER + TextBlob | lexicon sentiment scores for every review | `data/processed/sentiment_lexicon.parquet` | ~2 min |
 | 4. RoBERTa | installs the shipped scores, after checking they match your data | `data/processed/sentiment_roberta.parquet` | seconds |
 | 5. Analysis table | joins everything and defines inconsistency | `data/processed/analysis.parquet` | ~1 min |
-| 6. Notebooks | re-executes the seven notebooks, which redraws every figure | `notebooks/*.ipynb`, `reports/figures/` | ~4 min |
+| 6. Split | divides the reviews 70% train, 10% validation, 20% test | `data/splits/train.parquet`, `validation.parquet`, `test.parquet` | seconds |
+| 7. Notebooks | re-executes the seven notebooks, which redraws every figure | `notebooks/*.ipynb`, `reports/figures/` | ~4 min |
 
-\*Measured on the development laptop (Intel Core Ultra 7, 32 GB RAM). Expect about 10 minutes plus
-the download.
 
 You can safely run the command again: finished steps are skipped. Two options change this:
 * `--force` redoes everything.
@@ -168,6 +167,7 @@ python src/prepare.py
 python src/sentiment_lexicon.py
 python src/precomputed.py install        # or: python src/sentiment_roberta.py --device auto
 python src/build_features.py
+python src/splits.py
 jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb
 ```
 
@@ -199,6 +199,7 @@ notebooks/               *.py sources (jupytext) and *.ipynb notebooks with thei
 tests/                   test_timeseries.py: runs on synthetic reviews, no data download needed
 data/
   precomputed/           shipped RoBERTa scores + manifest (in the repo)
+  splits/                train, validation and test review ids as three parquet files (in the repo)
   raw/, processed/       created by the pipeline (not in the repo)
 reports/
   research_questions.md  short answers to the research questions

@@ -16,7 +16,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
 sys.path.insert(0, str(SRC))
-from config import ANALYSIS, META, REVIEWS, SENT_LEXICON, SENT_ROBERTA  # noqa: E402
+from config import ANALYSIS, META, REVIEWS, SENT_LEXICON, SENT_ROBERTA, SPLITS  # noqa: E402
+
+SPLIT_FILES = [SPLITS / f"{part}.parquet" for part in ("train", "validation", "test")]
 
 NOTEBOOKS = sorted((ROOT / "notebooks").glob("[0-9][0-9]_*.ipynb"))
 ENV = {**os.environ, "PYTHONUTF8": "1"}  # consistent text encoding on every OS
@@ -71,6 +73,7 @@ def main():
         ("Score sentiment: VADER + TextBlob", [SENT_LEXICON], lambda: run(SRC / "sentiment_lexicon.py"), True),
         roberta,
         ("Build the analysis table", [ANALYSIS], lambda: run(SRC / "build_features.py"), True),
+        ("Split into train, validation and test", SPLIT_FILES, lambda: run(SRC / "splits.py"), True),
     ]
     rerun_rest = args.force
     for i, (title, outputs, action, invalidates) in enumerate(steps, 1):

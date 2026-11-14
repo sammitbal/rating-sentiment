@@ -19,6 +19,7 @@ SENT_LEXICON = PROCESSED / "sentiment_lexicon.parquet"
 SENT_ROBERTA = PROCESSED / "sentiment_roberta.parquet"
 ROBERTA_CHUNKS = PROCESSED / "roberta_chunks"
 ANALYSIS = PROCESSED / "analysis.parquet"
+SPLITS = ROOT / "data" / "splits"  # train / validation / test review ids (src/splits.py)
 
 # Trained on tweets rather than Amazon star ratings, so its labels are independent of the
 # ratings we compare them against (a star-trained model would learn to hide inconsistency).
