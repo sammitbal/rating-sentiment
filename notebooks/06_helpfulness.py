@@ -25,10 +25,10 @@ import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import accuracy_score, average_precision_score, roc_auc_score
-from sklearn.model_selection import train_test_split
 
 from common import (BLUE, DIRECTION_COLORS, HIGH_NEG, INK_2, LOW_POS, MUTED, NEUTRAL, SURFACE, load,
                     rate_table, ratio_table, savefig, set_style)
+from splits import load_split
 
 set_style()
 df = load()
@@ -173,8 +173,9 @@ fe_table.round(3)
 # their reviews*, which includes the review being predicted. Most reviewers wrote one review, so for
 # them this feature *is* the target. We rebuild it from **earlier reviews only**.
 #
-# We use the paper's binary target, ≥1 helpful vote, on all reviews including 3★, with a random 80/20
-# split and gradient boosting. Kung et al.'s best reported accuracy was 0.969.
+# We use the paper's binary target, ≥1 helpful vote, on all reviews including 3★. The reviews are split
+# 70% train, 10% validation and 20% test (src/splits.py). Settings are chosen on validation, and the test
+# set is scored once with the chosen settings. Kung et al.'s best reported accuracy was 0.969.
 
 # %%
 df["has_helpful_int"] = df.has_helpful.astype(int)
@@ -189,13 +190,39 @@ feature_sets = {
     "+ review & product features": paper_clean + review,
     "+ rating–sentiment consistency": paper_clean + review + consistency,
 }
-idx_tr, idx_te = train_test_split(df.index, test_size=0.2, random_state=0, stratify=df.has_helpful)
-y_tr, y_te = df.loc[idx_tr, "has_helpful_int"], df.loc[idx_te, "has_helpful_int"]
+split_ids = {part: load_split(part) for part in ("train", "validation", "test")}
+tr, va, te = (df.index[df.review_id.isin(split_ids[p])] for p in ("train", "validation", "test"))
+assert len(tr) + len(va) + len(te) == len(df), "the three splits must cover every review exactly once"
+y_tr, y_va, y_te = (df.loc[i, "has_helpful_int"] for i in (tr, va, te))
+
+# Settings are chosen on validation only. The grid is small on purpose.
+GRID = [dict(max_iter=m, learning_rate=lr) for m in (200, 300, 600) for lr in (0.05, 0.08, 0.15)]
+
+
+def fit(feats, params):
+    """Train on the training split only."""
+    return HistGradientBoostingClassifier(random_state=0, **params).fit(df.loc[tr, feats].astype(float), y_tr)
+
+
+chosen, validation_rows = {}, []
+for name, feats in feature_sets.items():
+    best = None
+    for params in GRID:
+        m = fit(feats, params)
+        auc = roc_auc_score(y_va, m.predict_proba(df.loc[va, feats].astype(float))[:, 1])
+        validation_rows.append({"feature set": name, **params, "validation AUC": auc})
+        if best is None or auc > best[0]:
+            best = (auc, params)
+    chosen[name] = best[1]
+validation = pd.DataFrame(validation_rows)
+print("settings chosen on validation:")
+print(pd.DataFrame(chosen).T.to_string())
+
+# The test set is scored exactly once, here, with the settings chosen above.
 results = {}
 for name, feats in feature_sets.items():
-    X = df[feats].astype(float)
-    m = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.08, random_state=0).fit(X.loc[idx_tr], y_tr)
-    p = m.predict_proba(X.loc[idx_te])[:, 1]
+    m = fit(feats, chosen[name])
+    p = m.predict_proba(df.loc[te, feats].astype(float))[:, 1]
     results[name] = {"accuracy": accuracy_score(y_te, p >= 0.5), "ROC AUC": roc_auc_score(y_te, p),
                      "average precision": average_precision_score(y_te, p)}
 results = pd.DataFrame(results).T

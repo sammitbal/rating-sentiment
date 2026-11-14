@@ -4,11 +4,6 @@ How often does a reviewer's star rating disagree with what they wrote? What pred
 disagreements? Are some reviewers systematically inconsistent? And are inconsistent reviews more or
 less helpful?
 
-The project answers these questions for the **All_Beauty** category of **Amazon Reviews '23**
-(Hou et al., 2024): 694,252 reviews after cleaning. It extends **Kung, Orlando & Kirimlioglu (2024)**,
-*Were You Helpful: Predicting Helpful Votes from Amazon Reviews* (arXiv:2412.02884), which studied
-helpful votes in the same category.
-
 **Results**
 - [reports/research_questions.md](reports/research_questions.md): short answers to the four questions
 - [reports/report.md](reports/report.md): the full write-up, with methods, figures and limitations
@@ -20,12 +15,6 @@ helpful votes in the same category.
 
 The project runs on Windows, macOS and Linux, with or without a GPU. The slow sentiment-model step
 ships precomputed, so you need neither PyTorch nor a graphics card.
-
-**What you need**
-- **Python 3.10 or newer**, from [python.org](https://www.python.org/downloads/). To check, run
-  `python --version` (on macOS/Linux: `python3 --version`).
-- **About 2 GB of free disk space**: roughly 0.7 GB of data and 1 GB of Python packages.
-- **An internet connection.** The pipeline downloads 134 MB of review data from UCSD.
 
 **Steps.** Type these commands in a terminal: PowerShell on Windows, Terminal on macOS and Linux.
 
@@ -74,10 +63,9 @@ ships precomputed, so you need neither PyTorch nor a graphics card.
 | 3. VADER + TextBlob | lexicon sentiment scores for every review | `data/processed/sentiment_lexicon.parquet` | ~2 min |
 | 4. RoBERTa | installs the shipped scores, after checking they match your data | `data/processed/sentiment_roberta.parquet` | seconds |
 | 5. Analysis table | joins everything and defines inconsistency | `data/processed/analysis.parquet` | ~1 min |
-| 6. Notebooks | re-executes the six notebooks, which redraws every figure | `notebooks/*.ipynb`, `reports/figures/` | ~3 min |
+| 6. Split | divides the reviews 70% train, 10% validation, 20% test | `data/splits/train.parquet`, `validation.parquet`, `test.parquet` | seconds |
+| 7. Notebooks | re-executes the seven notebooks, which redraws every figure | `notebooks/*.ipynb`, `reports/figures/` | ~4 min |
 
-\*Measured on the development laptop (Intel Core Ultra 7, 32 GB RAM). Expect about 10 minutes plus
-the download.
 
 You can safely run the command again: finished steps are skipped. Two options change this:
 * `--force` redoes everything.
@@ -89,9 +77,29 @@ You can safely run the command again: finished steps are skipped. Two options ch
 |---|---|
 | `reports/research_questions.md` | short answers to the research questions |
 | `reports/report.md` | the full write-up |
-| `notebooks/01_…` to `06_…` | the analysis, in order. Open them with `jupyter lab`, with the virtual environment active |
+| `notebooks/01_…` to `07_…` | the analysis, in order. Open them with `jupyter lab`, with the virtual environment active |
 | `reports/figures/` | every chart, as PNG |
 | `reports/validation_sample.csv` | 300 reviews with empty label columns, for hand-checking the detector (made by notebook 3) |
+
+## Reviews over time: do products recover?
+
+Notebook 7 follows each product through time. Does a product that drew poor reviews early get better
+later, and do its negative reviews fade? Products picked for a bad start improve somewhat by chance
+alone, so the notebook compares the real data with copies in which each product's ratings are shuffled
+across its own timeline. Only improvement beyond that counts.
+
+After `python run_pipeline.py` has built the analysis table, you can also draw single products from the
+command line, with the virtual environment active:
+
+```
+python src/timeseries.py --list 15            # the 15 most-reviewed products, to pick from
+python src/timeseries.py --asin B07XXXXXXX    # timeline of one product (use a parent_asin from the list)
+python src/timeseries.py --top 6              # the six strongest recoveries, side by side
+python src/timeseries.py --top 6 --freq Q     # same, by quarter (Y, H = half-year, Q or M)
+```
+
+Figures go to `reports/figures/` as `07_*.png`. The checks for this code run on synthetic reviews, with
+no download: `python tests/test_timeseries.py`.
 
 ## Optional: recompute the RoBERTa scores on your own hardware
 
@@ -119,9 +127,6 @@ cleaning code or want to verify the scores yourself.
 | Intel GPU (Arc, Core Ultra) | `python -m pip install torch openvino` | `openvino-gpu` | ~15 min |
 | Intel GPU, PyTorch XPU build | the XPU command from [pytorch.org](https://pytorch.org/get-started/locally/) | `xpu` | not timed |
 | any CPU | Windows/Linux: `python -m pip install torch --index-url https://download.pytorch.org/whl/cpu`; macOS: `python -m pip install torch` | `cpu`, or `openvino-cpu` after `pip install openvino` | ~8 hours |
-
-\*On the development laptop (Intel Core Ultra 7 268V with Arc 140V graphics). The CPU figure is
-extrapolated from a 2,000-review run.
 
 Some things to know before recomputing:
 - **Model download.** The first run downloads the model, about 500 MB, from Hugging Face.
@@ -162,14 +167,9 @@ python src/prepare.py
 python src/sentiment_lexicon.py
 python src/precomputed.py install        # or: python src/sentiment_roberta.py --device auto
 python src/build_features.py
+python src/splits.py
 jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb
 ```
-
-**Editing notebooks.** The notebook sources are the `notebooks/*.py` files, in jupytext's "percent"
-format. After editing one, regenerate its notebook with `jupytext --to ipynb notebooks/<name>.py`.
-
-**Refreshing the shipped scores.** After recomputing, run
-`python src/precomputed.py export --note "<hardware used>"` and commit `data/precomputed/`.
 
 ## Project layout
 
@@ -185,6 +185,7 @@ src/
                          OpenVINO or CPU; resumable
   precomputed.py         installs (or exports) the shipped RoBERTa scores, after checking they fit
   build_features.py      inconsistency definitions + leakage-free reviewer/product features
+  timeseries.py          product trajectories over time: recovery test with a shuffled null, plots, CLI
   common.py              notebook helpers: colour-blind-safe plot style, Wilson CIs, forest plots
 notebooks/               *.py sources (jupytext) and *.ipynb notebooks with their outputs
   01_data_overview          replication of Kung et al.'s counts, cleaning, descriptives
@@ -193,8 +194,12 @@ notebooks/               *.py sources (jupytext) and *.ipynb notebooks with thei
   04_predictors             Q2: what predicts disagreement (logit ORs, boosting, distinctive terms)
   05_reviewers              Q3: systematic reviewers (leave-one-out concordance, permutation nulls)
   06_helpfulness            Q4: helpfulness (Poisson/logit/product FE) + leakage-free re-run of Kung et al.
+  07_time_series            extension: do products recover over time? negative reviews fading, tested
+                            against shuffled timelines
+tests/                   test_timeseries.py: runs on synthetic reviews, no data download needed
 data/
   precomputed/           shipped RoBERTa scores + manifest (in the repo)
+  splits/                train, validation and test review ids as three parquet files (in the repo)
   raw/, processed/       created by the pipeline (not in the repo)
 reports/
   research_questions.md  short answers to the research questions
@@ -208,8 +213,6 @@ requirements-lock.txt    the exact versions behind the published results
 
 ## Definitions
 
-These definitions are implemented in `src/build_features.py`.
-
 - **Polar rating**: 1–2★ (negative) or 4–5★ (positive). A 3★ rating has no opposite, so 3★ reviews
   are excluded.
 - **Reversal (per model)**: text polarity opposite to the rating polarity. VADER and TextBlob use
@@ -222,10 +225,6 @@ These definitions are implemented in `src/build_features.py`.
   outcome.
 
 ## Data and citations
-
-The review data is not stored in this repository: `src/download.py` fetches it from the McAuley Lab
-at UCSD. The files in `data/precomputed/` and `reports/audit_labels.csv` contain only review ids,
-scores and labels, not review text. If you use the data, please cite Hou et al. (2024).
 
 - Hou, Y., Li, J., He, Z., Yan, A., Chen, X., & McAuley, J. (2024). *Bridging Language and Items for
   Retrieval and Recommendation.* arXiv:2403.03952. https://amazon-reviews-2023.github.io/
