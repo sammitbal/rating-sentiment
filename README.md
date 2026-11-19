@@ -81,25 +81,6 @@ You can safely run the command again: finished steps are skipped. Two options ch
 | `reports/figures/` | every chart, as PNG |
 | `reports/validation_sample.csv` | 300 reviews with empty label columns, for hand-checking the detector (made by notebook 3) |
 
-## Reviews over time: do products recover?
-
-Notebook 7 follows each product through time. Does a product that drew poor reviews early get better
-later, and do its negative reviews fade? Products picked for a bad start improve somewhat by chance
-alone, so the notebook compares the real data with copies in which each product's ratings are shuffled
-across its own timeline. Only improvement beyond that counts.
-
-After `python run_pipeline.py` has built the analysis table, you can also draw single products from the
-command line, with the virtual environment active:
-
-```
-python src/timeseries.py --list 15            # the 15 most-reviewed products, to pick from
-python src/timeseries.py --asin B07XXXXXXX    # timeline of one product (use a parent_asin from the list)
-python src/timeseries.py --top 6              # the six strongest recoveries, side by side
-python src/timeseries.py --top 6 --freq Q     # same, by quarter (Y, H = half-year, Q or M)
-```
-
-Figures go to `reports/figures/` as `07_*.png`. The checks for this code run on synthetic reviews, with
-no download: `python tests/test_timeseries.py`.
 
 ## Optional: recompute the RoBERTa scores on your own hardware
 
@@ -118,15 +99,6 @@ cleaning code or want to verify the scores yourself.
    ```
    python run_pipeline.py --recompute-roberta
    ```
-
-| your hardware | install PyTorch with | `--device` | time for all reviews* |
-|---|---|---|---|
-| NVIDIA GPU (Windows, Linux) | the CUDA command from [pytorch.org](https://pytorch.org/get-started/locally/) | `cuda` | not timed |
-| AMD GPU (Linux) | the ROCm command from [pytorch.org](https://pytorch.org/get-started/locally/) | `cuda` | not timed |
-| Apple-silicon Mac (M-series) | `python -m pip install torch` | `mps` | not timed |
-| Intel GPU (Arc, Core Ultra) | `python -m pip install torch openvino` | `openvino-gpu` | ~15 min |
-| Intel GPU, PyTorch XPU build | the XPU command from [pytorch.org](https://pytorch.org/get-started/locally/) | `xpu` | not timed |
-| any CPU | Windows/Linux: `python -m pip install torch --index-url https://download.pytorch.org/whl/cpu`; macOS: `python -m pip install torch` | `cpu`, or `openvino-cpu` after `pip install openvino` | ~8 hours |
 
 Some things to know before recomputing:
 - **Model download.** The first run downloads the model, about 500 MB, from Hugging Face.
@@ -171,46 +143,6 @@ python src/splits.py
 jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb
 ```
 
-## Project layout
-
-```
-run_pipeline.py          runs every step (start here)
-src/
-  config.py              paths and constants
-  download.py            downloads the raw data and verifies its SHA-256 checksums
-  prepare.py             raw jsonl.gz → reviews.parquet, meta.parquet (dedup, HTML cleanup,
-                         removes auto-generated "Five Stars" titles)
-  sentiment_lexicon.py   VADER (title+body, title, body) and TextBlob polarity/subjectivity
-  sentiment_roberta.py   cardiffnlp/twitter-roberta-base-sentiment-latest on CUDA, MPS, XPU,
-                         OpenVINO or CPU; resumable
-  precomputed.py         installs (or exports) the shipped RoBERTa scores, after checking they fit
-  build_features.py      inconsistency definitions + leakage-free reviewer/product features
-  timeseries.py          product trajectories over time: recovery test with a shuffled null, plots, CLI
-  common.py              notebook helpers: colour-blind-safe plot style, Wilson CIs, forest plots
-notebooks/               *.py sources (jupytext) and *.ipynb notebooks with their outputs
-  01_data_overview          replication of Kung et al.'s counts, cleaning, descriptives
-  02_sentiment_measurement  model validity, agreement, thresholds, manual audit of the detector
-  03_inconsistency_rates    Q1: how often (flag rates + audit-adjusted estimate), typology
-  04_predictors             Q2: what predicts disagreement (logit ORs, boosting, distinctive terms)
-  05_reviewers              Q3: systematic reviewers (leave-one-out concordance, permutation nulls)
-  06_helpfulness            Q4: helpfulness (Poisson/logit/product FE) + leakage-free re-run of Kung et al.
-  07_time_series            extension: do products recover over time? negative reviews fading, tested
-                            against shuffled timelines
-tests/                   test_timeseries.py: runs on synthetic reviews, no data download needed
-data/
-  precomputed/           shipped RoBERTa scores + manifest (in the repo)
-  splits/                train, validation and test review ids as three parquet files (in the repo)
-  raw/, processed/       created by the pipeline (not in the repo)
-reports/
-  research_questions.md  short answers to the research questions
-  report.md              the full write-up
-  figures/               every chart in the notebooks (PNG)
-  audit_labels.csv       labels for the 250 manually audited reviews (I / M / C / U), keyed by review id
-requirements.txt         core packages (no PyTorch needed)
-requirements-roberta.txt optional: only for recomputing the RoBERTa scores
-requirements-lock.txt    the exact versions behind the published results
-```
-
 ## Definitions
 
 - **Polar rating**: 1–2★ (negative) or 4–5★ (positive). A 3★ rating has no opposite, so 3★ reviews
@@ -223,18 +155,3 @@ requirements-lock.txt    the exact versions behind the published results
   inflate it (see the report).
 - Reviewer history features are **leave-one-out** or **prior-only**, so none contains the review's own
   outcome.
-
-## Data and citations
-
-- Hou, Y., Li, J., He, Z., Yan, A., Chen, X., & McAuley, J. (2024). *Bridging Language and Items for
-  Retrieval and Recommendation.* arXiv:2403.03952. https://amazon-reviews-2023.github.io/
-- Kung, H., Orlando, D., & Kirimlioglu, E. (2024). *Were You Helpful – Predicting Helpful Votes from
-  Amazon Reviews.* arXiv:2412.02884.
-- Hutto, C. J., & Gilbert, E. (2014). VADER: A parsimonious rule-based model for sentiment analysis of
-  social media text. *ICWSM.*
-- Loureiro, D., Barbieri, F., Neves, L., Espinosa Anke, L., & Camacho-Collados, J. (2022). TimeLMs:
-  Diachronic language models from Twitter. *ACL demo.*
-- Monroe, B. L., Colaresi, M. P., & Quinn, K. M. (2008). Fightin' words: Lexical feature selection and
-  evaluation for identifying the content of political conflict. *Political Analysis.*
-- Sun, C., Qiu, X., Xu, Y., & Huang, X. (2019). How to fine-tune BERT for text classification?
-  *CCL.*
